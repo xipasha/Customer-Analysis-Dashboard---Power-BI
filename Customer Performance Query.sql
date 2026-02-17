@@ -15,10 +15,20 @@ MAX(sod.OrderQty) OVER(PARTITION BY soh.CustomerID) AS [Maximum Order],
 SUM(sod.OrderQty) OVER(PARTITION BY soh.CustomerID) AS [Total Orders],
 sod.UnitPrice,
 sod.LineTotal,
+
 CASE 
 WHEN SUM(sod.OrderQty) OVER(PARTITION BY soh.CustomerID) <= 45 AND sod.LineTotal >= 1000 THEN 'Regular'
 WHEN SUM(sod.OrderQty) OVER(PARTITION BY soh.CustomerID) <= 20 AND sod.LineTotal <= 1000 THEN 'Average'
-END AS  [Customer Type]
+END AS  [Customer Type],
+
+CASE
+WHEN soh.Status = 5 THEN 'Hight Activity'
+WHEN soh.Status = 4 THEN 'Active'
+WHEN soh.Status = 3 THEN 'Moderate'
+WHEN soh.Status = 2 THEN 'Low Activity'
+WHEN soh.Status = 1 THEN 'Inactive / Activty'
+END AS [Activity Status]
+
 -- soh is salesOrderHeader
 FROM sales.SalesOrderHeader AS soh
 -- sod is salesOrderDetail
